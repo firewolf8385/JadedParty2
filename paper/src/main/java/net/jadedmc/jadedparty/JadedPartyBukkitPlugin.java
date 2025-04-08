@@ -24,6 +24,8 @@ public class JadedPartyBukkitPlugin extends JavaPlugin {
         getCommand("party").setExecutor(new PartyCMD(this));
 
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(this), this);
+
+        JadedPartyAPI.initialize(this);
     }
 
     @Override
