@@ -1,0 +1,17 @@
+name: JadedParty
+version: '${project.version}'
+main: net.jadedmc.jadedparty.JadedPartyBukkitPlugin
+api-version: 1.13
+authors: [ JadedMC ]
+description: Feature-Rich Chat Plugin Developed by JadedMC
+website: http://www.jadedmc.net
+depend:
+  - JadedSync
+softdepend:
+  - PlaceholderAPI
+
+commands:
+  party:
+    description: Create and manage parties
+    usage: /<command>
+    aliases: [p]
