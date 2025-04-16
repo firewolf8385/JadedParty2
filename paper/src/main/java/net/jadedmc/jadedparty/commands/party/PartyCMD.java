@@ -44,6 +44,7 @@ public class PartyCMD implements CommandExecutor {
     private final PartyLeaveCMD partyLeaveCMD;
     private final PartyListCMD partyListCMD;
     private final PartyPromoteCMD partyPromoteCMD;
+    private final PartyTransferCMD partyTransferCMD;
 
     /**
      * Creates the command.
@@ -62,6 +63,7 @@ public class PartyCMD implements CommandExecutor {
         this.partyLeaveCMD = new PartyLeaveCMD(plugin);
         this.partyListCMD = new PartyListCMD(plugin);
         this.partyPromoteCMD = new PartyPromoteCMD(plugin);
+        this.partyTransferCMD = new PartyTransferCMD(plugin);
     }
 
     /**
@@ -73,7 +75,7 @@ public class PartyCMD implements CommandExecutor {
      * @return true.
      */
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String @NotNull [] args) {
         // Only players can use party commands.
         if(!(sender instanceof Player player)) {
             ChatUtils.chat(sender, plugin.getConfigManager().getMessage(ConfigMessage.PARTY_ERROR_NOT_A_PLAYER));
@@ -97,6 +99,7 @@ public class PartyCMD implements CommandExecutor {
             case "leave" -> partyLeaveCMD.execute(player, args);
             case "list", "online" -> partyListCMD.execute(player, args);
             case "promote" -> partyPromoteCMD.execute(player, args);
+            case "transfer" -> partyTransferCMD.execute(player, args);
             default -> partyInviteCMD.execute(player, new String[]{"invite", args[0]});
         }
 
