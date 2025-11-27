@@ -24,7 +24,7 @@
  */
 package net.jadedmc.jadedparty.commands.party;
 
-import net.jadedmc.jadedparty.JadedPartyAPI;
+import net.jadedmc.jadedchat.JadedChat;
 import net.jadedmc.jadedparty.JadedPartyBukkitPlugin;
 import net.jadedmc.jadedparty.party.Party;
 import net.jadedmc.jadedparty.party.player.PartyPlayer;
@@ -34,8 +34,9 @@ import net.jadedmc.jadedparty.settings.ConfigMessage;
 import net.jadedmc.jadedparty.utils.Tuple;
 import net.jadedmc.jadedparty.utils.chat.ChatUtils;
 import net.jadedmc.jadedsync.api.JadedSyncAPI;
-import net.jadedmc.jadedsync.api.player.SyncPlayer;
-import net.jadedmc.jadedsync.api.player.SyncPlayerMap;
+import net.jadedmc.jadedsync.api.player.JadedSyncPlayer;
+import net.jadedmc.jadedsync.api.player.JadedSyncPlayerMap;
+import net.jadedmc.jadedsync.libraries.bson.Document;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -71,7 +72,7 @@ public class PartyInviteCMD {
             //party.updateToRedis();
             newParty = true;
 
-            JadedSyncAPI.updatePlayer(player);
+            JadedSyncAPI.updatePlayerIntegrations(player);
             ChatUtils.chat(player, plugin.getConfigManager().getMessage(player, ConfigMessage.PARTY_CREATE_PARTY_CREATED));
         }
         else {
@@ -91,17 +92,24 @@ public class PartyInviteCMD {
 
         Party finalParty = party;
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-            final SyncPlayerMap syncPlayers = JadedSyncAPI.getSyncPlayers();
+            final JadedSyncPlayerMap players = JadedSyncAPI.getPlayers();
             String username = args[1];
 
-            if(!syncPlayers.contains(username)) {
+            if(!players.contains(username)) {
                 ChatUtils.chat(player, plugin.getConfigManager().getMessage(player, ConfigMessage.PARTY_INVITE_TARGET_NOT_ONLINE));
                 return;
             }
 
-            final SyncPlayer targetPlayer = syncPlayers.get(username);
-            if(PartyRole.valueOf(targetPlayer.getIntegrationDocument("jadedparty").getString("role")) != PartyRole.NONE) {
-                ChatUtils.chat(player, plugin.getConfigManager().getMessage(player, ConfigMessage.PARTY_INVITE_TARGET_IN_PARTY));
+            final JadedSyncPlayer targetPlayer = players.get(username);
+            final String json = targetPlayer.getIntegration("JadedParty");
+            final Document document = Document.parse(targetPlayer.getIntegration("JadedParty"));
+
+            if(!document.isEmpty()) {
+                if(PartyRole.valueOf(document.getString("role")) != PartyRole.NONE) {
+                    ChatUtils.chat(player, plugin.getConfigManager().getMessage(player, ConfigMessage.PARTY_INVITE_TARGET_IN_PARTY));
+                    return;
+                }
+
                 return;
             }
 

@@ -4,8 +4,8 @@ import net.jadedmc.jadedparty.JadedPartyBukkitPlugin;
 import net.jadedmc.jadedparty.party.types.LocalParty;
 import net.jadedmc.jadedparty.party.types.RemoteParty;
 import net.jadedmc.jadedsync.api.JadedSyncAPI;
+import net.jadedmc.jadedsync.libraries.bson.Document;
 import net.jadedmc.nanoid.NanoID;
-import org.bson.Document;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,9 +24,13 @@ public class PartyManager {
 
             plugin.getServer().getScheduler().runTask(plugin, () -> {
                 final LocalParty localParty = new LocalParty(plugin, document);
-                this.localParties.add(localParty);
+
+                if(localParties.getFromNanoID(localParty.getNanoID()) == null) {
+                    this.localParties.add(localParty);
+                }
+
                 for(final Player player : localParty.getOnlinePlayers()) {
-                    JadedSyncAPI.updatePlayer(player);
+                    JadedSyncAPI.updatePlayerIntegrations(player);
                 }
             });
         });

@@ -23,7 +23,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -35,6 +35,14 @@
                         </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <relocations>
+                        <relocation>
+                            <pattern>org.bson</pattern>
+                            <shadedPattern>net.jadedmc.jadedparty.libraries.bson</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
             </plugin>
         </plugins>
         <resources>
@@ -76,14 +84,6 @@
             <scope>compile</scope>
         </dependency>
 
-        <!-- bSon -->
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>bson</artifactId>
-            <version>5.3.1</version>
-            <scope>compile</scope>
-        </dependency>
-
         <!-- PlaceholderAPI -->
         <dependency>
             <groupId>me.clip</groupId>
@@ -101,9 +101,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.firewolf8385.JadedSync</groupId>
-            <artifactId>paper</artifactId>
-            <version>d889c225f0</version>
+            <groupId>com.github.JadedMC.JadedSync</groupId>
+            <artifactId>bukkit</artifactId>
+            <version>5f5c2504ea</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

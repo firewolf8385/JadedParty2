@@ -14,6 +14,8 @@ public class JadedPartyBukkitPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        JadedPartyAPI.initialize(this);
+
         this.configManager = new ConfigManager(this);
         this.hookManager = new HookManager(this);
         this.partyManager = new PartyManager(this);
@@ -24,8 +26,6 @@ public class JadedPartyBukkitPlugin extends JavaPlugin {
         getCommand("party").setExecutor(new PartyCMD(this));
 
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(this), this);
-
-        JadedPartyAPI.initialize(this);
     }
 
     @Override

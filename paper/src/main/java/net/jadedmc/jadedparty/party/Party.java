@@ -4,8 +4,8 @@ import net.jadedmc.jadedparty.JadedPartyBukkitPlugin;
 import net.jadedmc.jadedparty.party.player.PartyPlayer;
 import net.jadedmc.jadedparty.party.player.PartyRole;
 import net.jadedmc.jadedsync.api.JadedSyncAPI;
+import net.jadedmc.jadedsync.libraries.bson.Document;
 import net.jadedmc.nanoid.NanoID;
-import org.bson.Document;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -151,7 +151,7 @@ public abstract class Party {
 
             for(final PartyPlayer partyPlayer : this.players) {
                 final Player player = plugin.getServer().getPlayer(partyPlayer.getUniqueId());
-                if(player != null) JadedSyncAPI.updatePlayer(player);
+                if(player != null) JadedSyncAPI.updatePlayerIntegrations(player);
             }
 
             JadedSyncAPI.getIntegration("jadedparty").publish("party disband " + this.nanoID.toString());

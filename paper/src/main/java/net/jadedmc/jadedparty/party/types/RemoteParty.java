@@ -2,7 +2,7 @@ package net.jadedmc.jadedparty.party.types;
 
 import net.jadedmc.jadedparty.JadedPartyBukkitPlugin;
 import net.jadedmc.jadedparty.party.Party;
-import org.bson.Document;
+import net.jadedmc.jadedsync.libraries.bson.Document;
 import org.jetbrains.annotations.NotNull;
 
 public class RemoteParty extends Party {

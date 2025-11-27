@@ -4,7 +4,7 @@ import net.jadedmc.jadedparty.JadedPartyBukkitPlugin;
 import net.jadedmc.jadedparty.party.Party;
 import net.jadedmc.jadedparty.party.player.PartyPlayer;
 import net.jadedmc.jadedsync.api.JadedSyncAPI;
-import org.bson.Document;
+import net.jadedmc.jadedsync.libraries.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -52,7 +52,7 @@ public class LocalParty extends Party {
 
             final Player player = Bukkit.getPlayer(partyPlayer.getUniqueId());
             if(player != null) {
-                JadedSyncAPI.updatePlayer(player);
+                JadedSyncAPI.updatePlayerIntegrations(player);
             }
         }
 

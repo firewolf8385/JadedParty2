@@ -2,7 +2,7 @@ package net.jadedmc.jadedparty.party.player;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.jadedmc.jadedparty.JadedPartyBukkitPlugin;
-import org.bson.Document;
+import net.jadedmc.jadedsync.libraries.bson.Document;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 

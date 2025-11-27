@@ -31,8 +31,9 @@ import net.jadedmc.jadedparty.party.types.RemoteParty;
 import net.jadedmc.jadedparty.settings.ConfigMessage;
 import net.jadedmc.jadedparty.utils.chat.ChatUtils;
 import net.jadedmc.jadedsync.api.JadedSyncAPI;
-import net.jadedmc.jadedsync.api.player.SyncPlayer;
-import net.jadedmc.jadedsync.api.player.SyncPlayerMap;
+import net.jadedmc.jadedsync.api.player.JadedSyncPlayer;
+import net.jadedmc.jadedsync.api.player.JadedSyncPlayerMap;
+import net.jadedmc.jadedsync.libraries.bson.Document;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -69,16 +70,23 @@ public class PartyAcceptCMD {
         }
 
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-            final SyncPlayerMap syncPlayers = JadedSyncAPI.getSyncPlayers();
+            final JadedSyncPlayerMap jadedSyncPlayers = JadedSyncAPI.getPlayers();
             String username = args[1];
 
-            if(!syncPlayers.contains(username)) {
+            if(!jadedSyncPlayers.contains(username)) {
                 ChatUtils.chat(player, "<red><bold>Error</bold> <dark_gray>» <red>That player is not online");
                 return;
             }
 
-            final SyncPlayer targetSyncPlayer = syncPlayers.get(username);
-            final String targetPartyID = targetSyncPlayer.getIntegrationDocument("jadedparty").getString("party");
+            final JadedSyncPlayer targetSyncPlayer = jadedSyncPlayers.get(username);
+            final Document document = Document.parse(targetSyncPlayer.getIntegration("jadedparty"));
+
+            if(document.isEmpty()) {
+                ChatUtils.chat(player, "<red><bold>Error</bold> <dark_gray>» <red>That player is not in a party");
+                return;
+            }
+
+            final String targetPartyID = document.getString("party");
 
             if(targetPartyID.isEmpty()) {
                 ChatUtils.chat(player, "<red><bold>Error</bold> <dark_gray>» <red>That player is not in a party");
@@ -128,7 +136,7 @@ public class PartyAcceptCMD {
                 plugin.getPartyManager().cacheRemoteParty(remoteParty.getNanoID().toString());
             }
 
-            JadedSyncAPI.updatePlayer(player);
+            JadedSyncAPI.updatePlayerIntegrations(player);
         });
     }
 }

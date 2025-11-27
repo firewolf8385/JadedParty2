@@ -70,7 +70,7 @@ public class PartyLeaveCMD {
         party.sendMessage(plugin.getConfigManager().getMessage(player, ConfigMessage.PARTY_LEAVE_PLAYER_LEFT));
 
         party.removePlayer(player.getUniqueId());
-        JadedSyncAPI.updatePlayer(player);
+        JadedSyncAPI.updatePlayerIntegrations(player);
         party.updateToRedis();
     }
 }

@@ -8,8 +8,10 @@ import net.jadedmc.jadedparty.utils.StringUtils;
 import net.jadedmc.jadedparty.utils.chat.ChatUtils;
 import net.jadedmc.jadedsync.api.JadedSyncAPI;
 import net.jadedmc.jadedsync.api.integration.Integration;
+import net.jadedmc.jadedsync.api.player.JadedSyncPlayer;
+import net.jadedmc.jadedsync.api.server.CurrentInstance;
+import net.jadedmc.jadedsync.libraries.bson.Document;
 import net.jadedmc.nanoid.NanoID;
-import org.bson.Document;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,9 +27,9 @@ public class JadedSyncIntegration extends Integration {
     }
 
     @Override
-    public Document getPlayerDocument(@NotNull final Player player) {
+    public String getPlayerIntegration(@NotNull final JadedSyncPlayer player) {
         final Document document = new Document();
-        final LocalParty localParty = plugin.getPartyManager().getLocalPartyFromPlayer(player);
+        final LocalParty localParty = plugin.getPartyManager().getLocalPartyFromPlayer(player.toPlayer());
 
         if(localParty != null) {
             document.append("party", localParty.getNanoID().toString());
@@ -37,26 +39,31 @@ public class JadedSyncIntegration extends Integration {
         else {
             document.append("party", "");
             document.append("role", "NONE");
-            document.append("prefix", PlaceholderAPI.setPlaceholders(player, plugin.getConfigManager().getConfig().getString("Player.prefix")));
+            document.append("prefix", PlaceholderAPI.setPlaceholders(player.toPlayer(), plugin.getConfigManager().getConfig().getString("Player.prefix")));
         }
 
-        return document;
+        return document.toJson();
     }
 
     @Override
-    public boolean onPlayerJoin(@NotNull final Player player, @NotNull final Document document) {
+    public void onPlayerJoin(@NotNull final JadedSyncPlayer player) {
+        final Document document = Document.parse(player.getIntegration("jadedparty"));
+
+        if(document.isEmpty()) {
+            return;
+        }
+
         final String partyID = document.getString("party");
 
         if(partyID.isEmpty()) {
-           return false;
+           return;
         }
 
         plugin.getPartyManager().cacheRemoteParty(partyID);
-        return false;
     }
 
     @Override
-    public void onRedisMessage(@NotNull final String message) {
+    public void onMessageReceive(@NotNull final String message) {
         final String[] args = message.split(" ", 2);
         final String channel = args[0];
         final String command = args[1];
@@ -86,7 +93,7 @@ public class JadedSyncIntegration extends Integration {
 
                 for(final PartyPlayer partyPlayer : party.getPlayers()) {
                     final Player player = plugin.getServer().getPlayer(partyPlayer.getUniqueId());
-                    if(player != null) JadedSyncAPI.updatePlayer(player);
+                    if(player != null) JadedSyncAPI.updatePlayerIntegrations(player);
                 }
             }
 
@@ -162,5 +169,10 @@ public class JadedSyncIntegration extends Integration {
                 }
             }
         }
+    }
+
+    @Override
+    public String getServerIntegration(@NotNull CurrentInstance currentInstance) {
+        return "";
     }
 }

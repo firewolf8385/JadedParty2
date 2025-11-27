@@ -62,7 +62,7 @@ public class PartyCreateCMD {
 
         // Creates the party and updates it through the messaging service.
         final LocalParty party = plugin.getPartyManager().createParty(player);
-        JadedSyncAPI.updatePlayer(player);
+        JadedSyncAPI.updatePlayerIntegrations(player);
         //party.updateToRedis();
 
         // Tell the player the party was created.
