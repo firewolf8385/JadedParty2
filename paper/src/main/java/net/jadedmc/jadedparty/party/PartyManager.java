@@ -4,11 +4,14 @@ import net.jadedmc.jadedparty.JadedPartyBukkitPlugin;
 import net.jadedmc.jadedparty.party.types.LocalParty;
 import net.jadedmc.jadedparty.party.types.RemoteParty;
 import net.jadedmc.jadedsync.api.JadedSyncAPI;
+import net.jadedmc.jadedsync.api.player.JadedSyncPlayer;
 import net.jadedmc.jadedsync.libraries.bson.Document;
 import net.jadedmc.nanoid.NanoID;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.UUID;
 
 public class PartyManager {
     private final JadedPartyBukkitPlugin plugin;
@@ -80,5 +83,23 @@ public class PartyManager {
 
     public RemoteParty getRemotePartyFromNanoID(@NotNull final String nanoID) {
         return new RemoteParty(plugin, JadedSyncAPI.getRedis().get("jadedparty:parties:" + nanoID));
+    }
+
+    @Nullable
+    public RemoteParty getRemotePartyFromPlayer(@NotNull final UUID uuid) {
+        final JadedSyncPlayer jadedSyncPlayer = JadedSyncAPI.getPlayer(uuid);
+
+        if(jadedSyncPlayer == null) {
+            return null;
+        }
+
+        String integration = jadedSyncPlayer.getIntegration("jadedparty");
+        Document document = Document.parse(integration);
+
+        if(document.isEmpty() || !document.containsKey("party")) {
+            return null;
+        }
+
+        return getRemotePartyFromNanoID(document.getString("party"));
     }
 }

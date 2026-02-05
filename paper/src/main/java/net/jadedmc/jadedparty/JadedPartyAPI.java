@@ -5,6 +5,8 @@ import net.jadedmc.nanoid.NanoID;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.UUID;
+
 public class JadedPartyAPI {
     private static JadedPartyBukkitPlugin plugin;
 
@@ -19,5 +21,9 @@ public class JadedPartyAPI {
 
     public static Party getParty(NanoID nanoID) {
         return plugin.getPartyManager().getLocalPartyFromNanoID(nanoID);
+    }
+
+    public static Party getRemoteParty(UUID uuid) {
+        return plugin.getPartyManager().getRemotePartyFromPlayer(uuid);
     }
 }
